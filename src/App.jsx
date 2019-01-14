@@ -17,6 +17,7 @@ class App extends Component {
       messages: [],
       currentUser: {name: 'Bob'}
       webSocket: new WebSocket('ws://0.0.0.0:3002');
+      usersOnline: 0
     }
     this.addMessage = this.addMessage.bind(this);
   }
@@ -32,6 +33,7 @@ class App extends Component {
     const content = event.target.elements['text'].value;
 
     const newMessage = {id, username, content};
+
       if (newUser && newUser !== oldUser){
         const type = 'postNotification';
         const content = `${oldUser} has changed their name to ${newUser}`
@@ -55,15 +57,21 @@ class App extends Component {
 
     this.state.webSocket.onmessage = (event) => {
       const inMsg = JSON.parse(event.data)
-      const messageArray = this.state.messages.concat(inMsg)
-      this.setState({messages: messageArray})
+      if (inMsg.usersOnline) {
+        this.setState({usersOnline: inMsg.usersOnline})
+        //console.log(inMsg.usersOnline)
+      }
+      if (inMsg.content){
+        const messageArray = this.state.messages.concat(inMsg)
+        this.setState({messages: messageArray})
+      }
     }
   }
 
   render() {
     return (
       <Fragment>
-        <nav>
+        <nav usersOnline={this.state.usersOnline}/>
         <MessageList messages={this.state.messages}/>
         <ChatBar currentUser={this.state.currentUser} onSubmit={this.sendMessage}/>
       </Fragment>
