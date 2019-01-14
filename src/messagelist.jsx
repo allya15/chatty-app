@@ -1,19 +1,17 @@
 import React, {Component} from 'react';
 import Message from './Message.jsx';
 
-class MessageList extends Component {
+function MessageList(props){
+      const messageArray = []
+      props.messages.forEach((message) => {
+          messageArray.push(<Message data={message} key={message.id}/>)
+      })
+      return (
 
-  render() {
-    return (
-
-        const messageList = this.props.messages.map(message => {
-            return <Message key={message.id} message={message} />
-        });
-        return (
-            <main className="messages">
-                {messageList}
-            </main>
-        )
-    }
+          <main className="messages">
+              {messageArray}
+          </main>
+      )
 }
+
 export default MessageList;

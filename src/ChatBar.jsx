@@ -1,14 +1,15 @@
 import React, {Component} from 'react';
 
-class ChatBar extends Component {
-    render() {
-        return (
-            <form className="chatbar" onKeyPress={this.props.addMessage}>
-                <input name="username" className="chatbar-username" value={this.props.currentUser.name} placeholder="Your Name (Optional)"/>
-                <input name="message" className="chatbar-message" placeholder="Type a message and hit ENTER" />
-            </form>
-        )
-    }
+function ChatBar(props){
+    return (
+        <form onSubmit={props.onSubmit}>
+            <footer className="chatbar">
+                <input className="chatbar-username" placeholder={props.currentUser.name} name='username'></input>
+                <input className="chatbar-message" placeholder="Type a message and hit ENTER" name='text'></input>
+                <button type="submit">test</button>
+            </footer>
+        </form>
+    )
 }
 
 export default ChatBar;
