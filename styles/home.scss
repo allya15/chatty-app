@@ -42,6 +42,14 @@ body {
       flex: 2;
     }
 
+    .chatbar button{
+      margin: 0px;
+      padding: 0px;
+      border:0px;
+      visibility: hidden;
+      width: 0;
+    }
+
     .message {
       display: flex;
       padding: 5px;
@@ -61,6 +69,17 @@ body {
 
     .message-content {
       flex: 8;
+    }
+
+    .notification {
+      display: flex;
+      padding: 5px;
+    }
+
+    .notification-content {
+      flex: 2;
+      margin: 5px;
+      font-style: italic;
     }
 
     .message-username {
@@ -89,4 +108,12 @@ body {
       line-height: 60px;
       padding: 0 10px;
       text-decoration: none;
+    }
+
+    .user-count {
+      margin-left: 20vh;
+      position: fixed;
+      margin-top: 40px;
+      padding: 8px;
+      float: left;
     }
