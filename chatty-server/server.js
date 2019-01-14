@@ -82,7 +82,7 @@ wss.on('connection', (ws) => {
           type: 'notification',
           id: uuidv4(),
           usersOnline: wss.clients.size,
-          content: 'a resident has left the park'
+          content: 'User has left'
         }))
       }
     });
