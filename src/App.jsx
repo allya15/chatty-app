@@ -2,89 +2,61 @@ import React, {Component} from 'react';
 
 require('../styles/application.scss');
 
-class App extends Component {
+const wss = new WebSocket(`ws://${window.location.hostname}:3001`);
 
-  constructor(props){
+import Navbar from "./Navbar.jsx"
+import Message from "./Message.jsx"
+import Chatbar from "./Chatbar.jsx"
+import MessageList from "./MessageList.jsx"
+
+class App extends Component {
+  constructor() {
     super(props);
     this.state = {
-        currentUser: {name: 'Bob'},
-        messages : [
-          {
-            type: 'incomingMessage',
-            content: 'I won\'t be impressed with technology until I can download food.',
-            username: 'Anonymous1'
-          },
-          {
-            type: 'incomingNotification',
-            content: 'Anonymous1 changed their name to nomnom',
-          },
-          {
-            type: 'incomingMessage',
-            content: 'I wouldn\'t want to download Kraft Dinner. I\'d be scared of cheese packet loss.',
-            username: 'Anonymous2'
-          },
-          {
-            type: 'incomingMessage',
-            content: '...',
-            username: 'nomnom'
-          },
-          {
-            type: 'incomingMessage',
-            content: 'I\'d love to download a fried egg, but I\'m afraid encryption would scramble it',
-            username: 'Anonymous2'
-          },
-          {
-            type: 'incomingMessage',
-            content: 'This isn\'t funny. You\'re not funny',
-            username: 'nomnom'
-          },
-          {
-            type: 'incomingNotification',
-            content: 'Anonymous2 changed their name to NotFunny',
-          }
-        ]
-      };
-      this.addMessage = this.addMessage.bind(this);
+      loading: true,
+      messages: [
+        {
+          username: 'Bob',
+          content: 'Has anyone seen my marbles?',
+          id: '1'
+        },
+        {
+          username: 'Anonymous',
+          content: 'No, I think you lost them. You lost your marbles Bob. You lost them for good.',
+          id: '2'
+        }
+      ],
+      currentUser: {name: 'Bob'}
+    }
+    this.sendMessage = this.sendMessage.bind(this);
   }
 
+
+  addMessage(event) {
+    event.preventDefault();
+    //console.log(event);
+    const id = this.state.messages.length + 1;
+    const username = event.target.elements['username'].value || this.state.currentUser.name;
+    const content = event.target.elements['text'].value;
+    const newMessage = {id, username, content};
+    const messages = this.state.messages.concat(newMessage);
+    this.setState({messages: messages});
+    event.target.elements['text'].value = ''
+  }
   componentDidMount() {
-
-      window.scrollTo({ bottom: 0, behavior: 'smooth' });
-      console.log('componentDidMount <App />');
-      setTimeout(() => {
-
-        console.log('Simulating incoming message');
-
-        const newMessage = {id: 3, username: 'Michelle', content: 'Hello there!'};
-        const messages = this.state.messages.concat(newMessage)
-
-        this.setState({messages: messages})
-      }, 3000);
-    }
-
-
-
-  addMessage(message, name) {
-    let newMessageItem = {
-
-      content: message,
-      username: name
-    }
-    const newMessages = this.state.messages.concat(newMessageItem);
-    this.setState({ messages: newMessages });
   }
 
   render() {
     return (
+      <Fragment>
+        <nav>
+        <MessageList messages={this.state.messages}/>
+        <ChatBar currentUser={this.state.currentUser} onSubmit={this.sendMessage}/>
+      </Fragment>
 
-      <div>
-        {}
-        <MessageList messages = {this.state.messages} />
-        <ChatBar
-        currentUser={this.state.currentUser}
-        addMessage={this.addMessage}
-        />
-      </div>
     );
   }
 }
+
+export default App;
+
