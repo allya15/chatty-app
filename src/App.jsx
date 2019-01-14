@@ -6,14 +6,14 @@ import MessageList from "./MessageList.jsx"
 
 class App extends Component {
 
-  constructor(props);
-    super(props){
+  constructor(props) {
+    super(props);
     this.state = {
       loading: true,
       messages: [],
-      currentUser: {name: 'Bob'}
-      webSocket: new WebSocket('ws://0.0.0.0:3001');
-      usersOnline: 0
+      currentUser: {name: 'Bob', color: '', id: ''}
+      // webSocket: new WebSocket('ws://0.0.0.0:3002'),
+      // usersOnline: 0
     }
     this.addMessage = this.addMessage.bind(this);
   }
@@ -68,15 +68,19 @@ class App extends Component {
       }
       if (inMsg.usersOnline) {
         this.setState({
-          usersOnline: inMsg.usersOnline.
+          usersOnline: inMsg.usersOnline,
         })
       }
       console.log(messages)
       const messageArray = messages.concat(inMsg)
-      console.log('MESSAGE ARRAY: ' message Array)
+      console.log('MESSAGE ARRAY: ', messageArray)
       this.setState({messages: messageArray})
     }
   }
+
+      componentDidUpdate() {
+      this.scrollRef.current.scrollIntoView({behavior: "instant", inline: "nearest"});
+      }
 
   render() {
     return (
