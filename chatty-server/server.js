@@ -1,66 +1,44 @@
 const express = require('express');
 const SocketServer = require('ws');
 const uuidv4 = require('uuid/v4')
-const PORT = 3001;
+
+// Set the port to 3001
+const PORT = 3002;
+
+// Create a new express server
 const server = express()
+   // Make the express server serve static assets (html, javascript, css) from the /public folder
   .use(express.static('public'))
   .listen(PORT, '0.0.0.0', 'localhost', () => console.log(`Listening on ${ PORT }`));
 
+// Create the WebSockets server
 const wss = new SocketServer.Server({ server });
+
+// Set up a callback that will run when a client connects to the server
+// When a client connects they are assigned a socket, represented by
+// the ws parameter in the callback.
 wss.on('connection', (ws) => {
 
   console.log('Client connected');
-  ws.send(JSON.stringify({
-    user: {
-      id: uuidv4(),
-      color: "#" + Math.random().toString(16).slice(2, 8)
-    }}))
+  const generateUser = {user: {id: uuidv4(), color: "#" + Math.random().toString(16).slice(2, 8)}}
+  ws.send(JSON.stringify(generateUser))
 
   wss.clients.forEach(function each(client) {
     if (client.readyState === SocketServer.OPEN) {
       client.send(JSON.stringify({
-        type: 'notification',
+        type: 'incomingNotification',
         id: uuidv4(),
         usersOnline: wss.clients.size,
-        content: 'Someone wants the chat!'
+        content: 'a new user has joined the chat'
       }))
     }
   });
 
   ws.on('message', function incoming(data) {
-    const message = JSON.parse(data)
-    message.id = uuidv4();
-
-    function removeURL(string) {
-      const messageArray = string.split(' ');
-      const imageReg = new RegExp(/(http(s?):)([/|.|\w|\s|-])*\.(?:jpg|gif|png)/ig)
-      const newMessageArray = [];
-      messageArray.forEach((word) => {
-          if(!imageReg.test(word)){
-              newMessageArray.push(word)
-          }
-      })
-      string = newMessageArray.join(' ')
-      return string;
-    }
-
-    function imageURL(string) {
-      const messageArray = string.split(' ');
-      const imageReg = new RegExp(/(http(s?):)([/|.|\w|\s|-])*\.(?:jpg|gif|png)/ig)
-      const urlArray = [];
-      messageArray.forEach((word) => {
-          if(imageReg.test(word)){
-              urlArray.push(word)
-          }
-      })
-      return urlArray;
-    }
-
-
-    message.imgs = imageURL(message.content)
-    message.content = removeURL(message.content)
-
-    data = JSON.stringify(message)
+    const parsed = JSON.parse(data)
+    parsed.id = uuidv4();
+    data = JSON.stringify(parsed)
+    // Broadcast to everyone else.
     wss.clients.forEach(function each(client) {
         if (client.readyState === SocketServer.OPEN) {
           client.send(data);
@@ -68,20 +46,21 @@ wss.on('connection', (ws) => {
       });
     });
 
+    // Set up a callback for when a client closes the socket. This usually means they closed their browser.
+    ws.on('close', (ws) => {
+      console.log('Client disconnected')
+      wss.clients.forEach(function each(client) {
+        if (client.readyState === SocketServer.OPEN) {
+          client.send(JSON.stringify({
+            type: 'incomingNotification',
+            id: uuidv4(),
+            usersOnline: wss.clients.size,
+            content: 'a user has left the chat'
+          }))
+        }
+      });
 
-  ws.on('close', (ws) => {
-    console.log('Client disconnected')
 
-    wss.clients.forEach(function each(client) {
-      if (client.readyState === SocketServer.OPEN) {
-        client.send(JSON.stringify({
-          type: 'notification',
-          id: uuidv4(),
-          usersOnline: wss.clients.size,
-          content: 'User has left'
-        }))
-      }
+
     });
-  });
-
-});
+})

@@ -1,41 +1,39 @@
 import React, { Component } from 'react';
 
 function Message(props) {
+    if (props.data.type === 'postMessage') {
 
-    const {content, color, username, type, imgs} = props.data
+        function imageURL(string) {
+            const messageString = string;
+            const start = messageString.search(/(http(s?):)([/|.|\w|\s|-])*\.(?:jpg|gif|png)/ig);
+            const end = messageString.search(/(?:jpg|gif|png)\b/ig) + 3;
+            const imageURL = messageString.slice(start, end)
+            console.log(imageURL)
+            return imageURL
+        }
 
-    function buildImgs(imgArray) {
-        const renderArray = []
-        imgArray.forEach((img) => {
-            renderArray.push(<img className='message-image' alt='user-image' src={img}/>)
-        })
-        return renderArray;
+        return (
+            <div className="message">
+            <span className="message-username" style={{color: props.data.color}}>{props.data.username}</span>
+            <span className="message-content">{props.data.content}
+                <img className='message-image' src={imageURL(props.data.content)}/>
+            </span>
+            </div>
+        )
+
+    } else if (props.data.type === 'incomingNotification') {
+        return (
+            <div className="notification">
+            <span className="notification-content">{props.data.content}</span>
+            </div>
+        )
+    } else {
+        return (
+            <div className="notification">
+            <span className="notification-content">unknown notification</span>
+            </div>
+        )
     }
-
-    switch(type) {
-        case 'message':
-            return (
-                <div className="message">
-                <span className="message-username" style={{color: color}}>{username}</span>
-                <span className="message-content">{content}
-                {buildImgs(imgs)}
-                </span>
-                </div>
-            )
-            break;
-        case 'notification':
-            return (
-                <div className="notification">
-                <span className="notification-content">{content}</span>
-                </div>
-            )
-            break;
-    }
-    return (
-        <div className="notification">
-        <span className="notification-content">unknown message from server</span>
-        </div>
-    )
 }
 
 export default Message;

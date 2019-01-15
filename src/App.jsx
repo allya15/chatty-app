@@ -10,7 +10,7 @@ class App extends Component {
     this.state = {
       loading: true,
       messages: [],
-      currentUser: {name: 'name', color: '', id: ''},
+      currentUser: {name: 'Aaron', color: '', id: ''},
       webSocket: new WebSocket('ws://0.0.0.0:3002'),
       usersOnline: 0,
     }
@@ -26,7 +26,7 @@ class App extends Component {
       const content = event.target.elements['text'].value
 
       if (newUser && newUser !== oldUser){
-        const type = 'notification';
+        const type = 'incomingNotification';
         const content = `${oldUser} has changed their name to ${newUser}`
         const newNotification = {type, content}
         socket.send(JSON.stringify(newNotification))
@@ -34,7 +34,7 @@ class App extends Component {
       }
 
       if (content) {
-        const type = 'message';
+        const type = 'postMessage';
         const id = this.state.messages.length + 1;
         const username = newUser || oldUser;
         const color = this.state.currentUser.color;
@@ -43,51 +43,47 @@ class App extends Component {
         event.target.elements['text'].value = '';
       }
   }
+  componentDidUpdate() {
+    this.scrollRef.current.scrollIntoView({behavior: "instant", inline: "nearest"});
+    }
 
   componentDidMount() {
-    const {webSocket} = this.state;
 
-    webSocket.onopen = (event) => {
+
+    this.state.webSocket.onopen = (event) => {
       console.log('connected to webSocket');
     }
 
-    webSocket.onmessage = (event) => {
-      const {messages, currentUser} = this.state;
+    this.state.webSocket.onmessage = (event) => {
       const inMsg = JSON.parse(event.data)
       console.log(inMsg)
 
       if (inMsg.user) {
         this.setState({
           currentUser: {
-            name: currentUser.name,
+            name: this.state.currentUser.name,
             id: inMsg.user.id,
             color: inMsg.user.color
-          }})
-          return;
-        }
+        }})
+        return;
+      }
 
       if (inMsg.usersOnline) {
         this.setState({
           usersOnline: inMsg.usersOnline,
         })
       }
-      console.log(messages)
-      const messageArray = messages.concat(inMsg)
-      console.log('MESSAGE ARRAY: ', messageArray)
+      const messageArray = this.state.messages.concat(inMsg)
       this.setState({messages: messageArray})
     }
   }
 
-    componentDidUpdate() {
-      this.scrollRef.current.scrollIntoView({behavior: "instant", inline: "nearest"});
-      }
-
-    render() {
+  render() {
     return (
       <Fragment>
         <Nav usersOnline={this.state.usersOnline}/>
         <MessageList messages={this.state.messages}/>
-        <div ref={this.scrollRef}/> {/* this is targeted for scrolling to bottom */}
+        <div ref={this.scrollRef}/>
         <ChatBar currentUser={this.state.currentUser} onSubmit={this.sendMessage}/>
       </Fragment>
     );
