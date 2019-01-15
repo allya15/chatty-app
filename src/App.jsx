@@ -1,39 +1,38 @@
-import React, {Component} from 'react';
-import Nav from "./Nav.jsx"
-import Message from "./Message.jsx"
-import Chatbar from "./Chatbar.jsx"
-import MessageList from "./MessageList.jsx"
+import React, {Component, Fragment} from 'react';
+import Nav from './Nav.jsx'
+import MessageList from './MessageList.jsx'
+import ChatBar from './ChatBar.jsx'
 
 class App extends Component {
 
-  constructor(props) {
+  constructor(props){
     super(props);
     this.state = {
       loading: true,
       messages: [],
-      currentUser: {name: 'Bob', color: '', id: ''}
-      // webSocket: new WebSocket('ws://0.0.0.0:3002'),
-      // usersOnline: 0
+      currentUser: {name: 'name', color: '', id: ''},
+      webSocket: new WebSocket('ws://0.0.0.0:3001'),
+      usersOnline: 0,
     }
-    this.addMessage = this.addMessage.bind(this);
+    this.scrollRef = React.createRef();
+    this.sendMessage = this.sendMessage.bind(this);
   }
 
-
-  addMessage(event) {
-    event.preventDefault();
-    //console.log(event);
-    const newUser = event.target.elements['username'].value;
-    const oldUser = event.state.currentUser.name;
-    const socket = this.state.webSocket;
-    const content = event.target.elements['text'].value;
+  sendMessage = (event) => {
+      event.preventDefault()
+      const newUser = event.target.elements['username'].value
+      const oldUser = this.state.currentUser.name
+      const socket = this.state.webSocket
+      const content = event.target.elements['text'].value
 
       if (newUser && newUser !== oldUser){
-        const type = 'Notification';
+        const type = 'notification';
         const content = `${oldUser} has changed their name to ${newUser}`
         const newNotification = {type, content}
-        socket.send(JSON.stringify(newNotifcation));
+        socket.send(JSON.stringify(newNotification))
         this.setState({currentUser: {name: newUser, id: this.state.currentUser.id, color: this.state.currentUser.color}})
       }
+
       if (content) {
         const type = 'message';
         const id = this.state.messages.length + 1;
@@ -46,8 +45,8 @@ class App extends Component {
   }
 
   componentDidMount() {
-
     const {webSocket} = this.state;
+
     webSocket.onopen = (event) => {
       console.log('connected to webSocket');
     }
@@ -65,7 +64,8 @@ class App extends Component {
             color: inMsg.user.color
           }})
           return;
-      }
+        }
+
       if (inMsg.usersOnline) {
         this.setState({
           usersOnline: inMsg.usersOnline,
@@ -78,21 +78,19 @@ class App extends Component {
     }
   }
 
-      componentDidUpdate() {
+    componentDidUpdate() {
       this.scrollRef.current.scrollIntoView({behavior: "instant", inline: "nearest"});
       }
 
-  render() {
+    render() {
     return (
       <Fragment>
-        <nav usersOnline={this.state.usersOnline}/>
+        <Nav usersOnline={this.state.usersOnline}/>
         <MessageList messages={this.state.messages}/>
+        <div ref={this.scrollRef}/> {/* this is targeted for scrolling to bottom */}
         <ChatBar currentUser={this.state.currentUser} onSubmit={this.sendMessage}/>
       </Fragment>
-
     );
-  }
-}
-
+  };
+};
 export default App;
-

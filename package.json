@@ -1,14 +1,14 @@
 {
-  "name": "chatty-app",
+  "name": "Chatty",
   "version": "1.0.0",
-  "description": "Simple and lightweight Boilerplate for ReactJS projects",
+  "description": "Simple and lightweight student chat project",
   "scripts": {
     "lint": "eslint --ext .jsx,.js src",
     "start": "node server.js"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/allya15/chatty-app.git"
+    "url": "https://github.com/aaronrbg/chatty.git"
   },
   "keywords": [
     "react",
@@ -19,12 +19,12 @@
     "edit",
     "webpack"
   ],
-  "author": "Allison Avis <allison.avis@gmail.com>",
+  "author": "Aaron Rosenberg <aaronrbg@gmail.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/allya15/chatty-app/issues"
+    "url": "https://github.com/aaronrbg/chatty/issues"
   },
-  "homepage": "https://github.com/allya15/chatty-app",
+  "homepage": "https://github.com/aaronrbg/chatty",
   "engines": {
     "node": ">=6.0.0"
   },
@@ -42,10 +42,11 @@
     "sockjs-client": "^1.1.2",
     "style-loader": "0.13.1",
     "webpack": "2.2.1",
-    "webpack-dev-server": "2.3.0"
+    "webpack-dev-server": "^3.1.14"
   },
   "dependencies": {
-    "react": "15.4.2",
-    "react-dom": "15.4.2"
+    "react": "16.6.3",
+    "react-dom": "16.6.3",
+    "react-scroll-to-bottom": "^1.2.0"
   }
 }

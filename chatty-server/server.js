@@ -6,11 +6,9 @@ const server = express()
   .use(express.static('public'))
   .listen(PORT, '0.0.0.0', 'localhost', () => console.log(`Listening on ${ PORT }`));
 
-// Create the WebSockets server and listen for connections
 const wss = new SocketServer.Server({ server });
 wss.on('connection', (ws) => {
 
-  //On client connection, assign and sends a user ID and Color to that client
   console.log('Client connected');
   ws.send(JSON.stringify({
     user: {
@@ -18,19 +16,17 @@ wss.on('connection', (ws) => {
       color: "#" + Math.random().toString(16).slice(2, 8)
     }}))
 
-  //On client connection, notify all clients of new total connections
   wss.clients.forEach(function each(client) {
     if (client.readyState === SocketServer.OPEN) {
       client.send(JSON.stringify({
         type: 'notification',
         id: uuidv4(),
         usersOnline: wss.clients.size,
-        content: 'a new resident has has entered the park'
+        content: 'Someone wants the chat!'
       }))
     }
   });
 
-  //On incoming message, server parses and broadcasts message to all clients
   ws.on('message', function incoming(data) {
     const message = JSON.parse(data)
     message.id = uuidv4();
@@ -75,7 +71,7 @@ wss.on('connection', (ws) => {
 
   ws.on('close', (ws) => {
     console.log('Client disconnected')
-    //On client close, server notifys all clients of new total connections
+
     wss.clients.forEach(function each(client) {
       if (client.readyState === SocketServer.OPEN) {
         client.send(JSON.stringify({
@@ -86,6 +82,6 @@ wss.on('connection', (ws) => {
         }))
       }
     });
-  }); //end of CLOSE
+  });
 
 });
