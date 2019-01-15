@@ -11,7 +11,7 @@ class App extends Component {
       loading: true,
       messages: [],
       currentUser: {name: 'name', color: '', id: ''},
-      webSocket: new WebSocket('ws://0.0.0.0:3001'),
+      webSocket: new WebSocket('ws://0.0.0.0:3002'),
       usersOnline: 0,
     }
     this.scrollRef = React.createRef();
